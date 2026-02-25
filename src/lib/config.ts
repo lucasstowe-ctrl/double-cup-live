@@ -10,35 +10,48 @@ export type Scenario = keyof typeof SCENARIOS;
 export const APP_CONFIG = {
   timezone: 'America/Chicago',
   dayResetHour: 4,
-  avgTicket: 9.5,
-  ticketVariance: 2.4,
-  cogsRate: 0.28,
-  feePercent: 0.0249,
-  feeFixed: 0.15,
+
+  avgTicketWeekday: 8.5,
+  avgTicketWeekend: 9.25,
+  ticketVariance: 2.0,
+
+  cogsRate: 0.30,
+  feePercent: 0.029,
+  feeFixed: 0.30,
+
   initialCapitalCost: 75000,
+
   monthlyFixedCosts: {
     utilities: 1200,
     trash: 250,
     cleaning: 250,
-    toastSoftware: 350,
+    toastSoftware: 450,
     insurance: 300,
     quickbooks: 40,
+    internet: 120,
+    maintenanceReserve: 400,
+    miscSupplies: 300,
+    marketing: 250,
   },
+
   wageBarista: 13.5,
   wageLead: 23,
-  ownerSalaryDaily: 210,
+  payrollBurden: 0.12,
+
   tips: {
     baseMin: 0.75,
     baseMax: 1.75,
-    rushMultiplier: 1.12,
+    rushMultiplier: 1.15,
   },
+
   mixModel: {
     coffee: 0.7,
-    tea: 0.2,
-    other: 0.1,
+    tea: 0.1,
+    food: 0.2,
   },
+
   openHours: {
-    weekday: { open: '06:00', close: '20:00' },
+    weekday: { open: '06:30', close: '20:00' },
     saturday: { open: '07:30', close: '16:00' },
     sunday: { open: '08:00', close: '18:00' },
   },
