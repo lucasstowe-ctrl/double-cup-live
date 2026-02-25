@@ -70,7 +70,7 @@ export default function LiveDashboard() {
   }
 
   // If your API uses different keys, we can map them once you show me the JSON.
-  const drinks = data?.today?.drinks ?? data?.today?.drinksSold ?? 0;
+  const drinks = data?.today?.drinks ?? 0;
   const revenue = data?.today?.revenue ?? 0;
   const profit = data?.today?.profit ?? 0;
 
