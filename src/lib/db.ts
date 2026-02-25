@@ -107,7 +107,7 @@ async function ensureDefaults() {
         'Base+',
         0,
         APP_CONFIG.initialCapitalCost,
-        APP_CONFIG.avgTicket,
+        APP_CONFIG.avgTicketWeekday,
         APP_CONFIG.cogsRate,
         APP_CONFIG.feePercent,
         APP_CONFIG.feeFixed,
