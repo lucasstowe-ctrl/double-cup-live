@@ -124,7 +124,7 @@ async function ensureDefaults() {
         `INSERT INTO settings (id, timezone, day_reset_hour, scenario, include_owner_salary, initial_capital_cost, avg_ticket, cogs_rate, fee_percent, fee_fixed, monthly_fixed_costs_json, wage_barista, wage_lead, tip_model_json, owner_salary_daily, created_at, updated_at)
          VALUES (1,$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
          ON CONFLICT (id) DO NOTHING`,
-        [APP_CONFIG.timezone, APP_CONFIG.dayResetHour, 'Base+', 0, APP_CONFIG.initialCapitalCost, APP_CONFIG.avgTicket, APP_CONFIG.cogsRate, APP_CONFIG.feePercent, APP_CONFIG.feeFixed, fixedJson, APP_CONFIG.wageBarista, APP_CONFIG.wageLead, tipJson, APP_CONFIG.ownerSalaryDaily, now, now]
+        [APP_CONFIG.timezone, APP_CONFIG.dayResetHour, 'Base+', 0, APP_CONFIG.initialCapitalCost, APP_CONFIG.avgTicketWeekday, APP_CONFIG.cogsRate, APP_CONFIG.feePercent, APP_CONFIG.feeFixed, fixedJson, APP_CONFIG.wageBarista, APP_CONFIG.wageLead, tipJson, APP_CONFIG.ownerSalaryDaily, now, now]
       );
     }
   }
