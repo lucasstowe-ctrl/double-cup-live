@@ -78,3 +78,5 @@ All business assumptions are centralized in:
 - `src/lib/config.ts`
 
 This includes pricing, mix model, wages, tips, fixed costs, initial capital, day reset, and scenario multipliers.
+
+deploy trigger
