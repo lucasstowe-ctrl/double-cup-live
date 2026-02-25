@@ -37,6 +37,7 @@ export const APP_CONFIG = {
   wageBarista: 13.5,
   wageLead: 23,
   payrollBurden: 0.12,
+  ownerSalaryDaily: 210,
 
   tips: {
     baseMin: 0.75,
