@@ -73,7 +73,8 @@ export async function getDashboardMetrics() {
   const allTime = await getAllTimeRollup();
   const recentProfits = await getRecentDailyProfits(7);
 
-  const remainingCapital = Math.max(0, settings.initial_capital_cost - allTime.cumulative_profit);
+ const cumulativeProfit = Number(allTime?.cumulative_profit ?? 0);
+const remainingCapital = Math.max(0, Number(settings.initial_capital_cost) - cumulativeProfit);
   const avgDaily = recentProfits.length >= 3
     ? recentProfits.reduce((sum, d) => sum + Number(d.profit), 0) / recentProfits.length
     : projectedDailyProfit(settings.scenario as Scenario);
