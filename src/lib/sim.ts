@@ -58,7 +58,9 @@ export function simulateTick(input: TickInput) {
     ? APP_CONFIG.avgTicketWeekend
     : APP_CONFIG.avgTicketWeekday;
 
-  revenue += Math.max(4.5, avgTicket + variance);
+  const isWeekend = now.weekday === 6 || now.weekday === 7;
+const avgTicket = isWeekend ? APP_CONFIG.avgTicketWeekend : APP_CONFIG.avgTicketWeekday;
+revenue += Math.max(4.5, avgTicket + variance);
 }
 
   const cogs = revenue * APP_CONFIG.cogsRate;
