@@ -51,9 +51,15 @@ export function simulateTick(input: TickInput) {
 
   let revenue = 0;
   for (let i = 0; i < transactions; i += 1) {
-    const variance = (Math.random() - 0.5) * APP_CONFIG.ticketVariance * 2;
-    revenue += Math.max(4.5, APP_CONFIG.avgTicket + variance);
-  }
+  const variance = (Math.random() - 0.5) * APP_CONFIG.ticketVariance * 2;
+
+  const isWeekend = now.weekday === 6 || now.weekday === 7;
+  const avgTicket = isWeekend
+    ? APP_CONFIG.avgTicketWeekend
+    : APP_CONFIG.avgTicketWeekday;
+
+  revenue += Math.max(4.5, avgTicket + variance);
+}
 
   const cogs = revenue * APP_CONFIG.cogsRate;
   const fees = revenue * APP_CONFIG.feePercent + transactions * APP_CONFIG.feeFixed;
