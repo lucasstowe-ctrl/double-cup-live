@@ -72,7 +72,8 @@ export function simulateTick(input: TickInput) {
     : 0;
 
   const laborTotal = wages + tips + owner;
-  const fixed = monthlyFixedTotal / now.daysInMonth / ticksPerBusinessDay(now);
+  const daysInMonth = now.daysInMonth ?? 30;
+const fixed = monthlyFixedTotal / daysInMonth / ticksPerBusinessDay(now);
   const profit = revenue - cogs - fees - fixed - laborTotal;
 
   return {
