@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
 type Metrics = {
-  now: string;
+  now?: string;
   today?: {
     drinks: number;
     revenue: number;
@@ -12,19 +12,58 @@ type Metrics = {
     fees: number;
     cogs: number;
   };
-  allTime?: {
-    cumulative_profit: number;
-  };
   breakeven?: {
     remainingCapital: number;
     etaDays: number | null;
   };
-  // allow extra fields without breaking
-  [key: string]: any;
 };
 
 function formatMoney(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function parseMetrics(value: unknown): Metrics | null {
+  if (!isRecord(value)) return null;
+
+  // We only need a couple fields; keep parsing tolerant.
+  const todayRaw = value['today'];
+  const breakevenRaw = value['breakeven'];
+
+  const today =
+    isRecord(todayRaw) &&
+    typeof todayRaw['drinks'] === 'number' &&
+    typeof todayRaw['revenue'] === 'number' &&
+    typeof todayRaw['profit'] === 'number' &&
+    typeof todayRaw['labor'] === 'number' &&
+    typeof todayRaw['fees'] === 'number' &&
+    typeof todayRaw['cogs'] === 'number'
+      ? {
+          drinks: todayRaw['drinks'],
+          revenue: todayRaw['revenue'],
+          profit: todayRaw['profit'],
+          labor: todayRaw['labor'],
+          fees: todayRaw['fees'],
+          cogs: todayRaw['cogs'],
+        }
+      : undefined;
+
+  const breakeven =
+    isRecord(breakevenRaw) &&
+    typeof breakevenRaw['remainingCapital'] === 'number' &&
+    (typeof breakevenRaw['etaDays'] === 'number' || breakevenRaw['etaDays'] === null)
+      ? {
+          remainingCapital: breakevenRaw['remainingCapital'],
+          etaDays: breakevenRaw['etaDays'] as number | null,
+        }
+      : undefined;
+
+  const now = typeof value['now'] === 'string' ? value['now'] : undefined;
+
+  return { now, today, breakeven };
 }
 
 export default function LiveDashboard() {
@@ -37,17 +76,20 @@ export default function LiveDashboard() {
       setError(null);
       const res = await fetch('/api/metrics', { cache: 'no-store' });
       if (!res.ok) throw new Error(`metrics fetch failed: ${res.status}`);
-      const json = (await res.json()) as Metrics;
-      setData(json);
+      const raw: unknown = await res.json();
+      const parsed = parseMetrics(raw);
+      if (!parsed) throw new Error('metrics response was not valid JSON object');
+      setData(parsed);
       setLastUpdated(new Date());
-    } catch (e: any) {
-      setError(e?.message ?? 'unknown error');
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'unknown error';
+      setError(msg);
     }
   }
 
   useEffect(() => {
     load();
-    const id = setInterval(load, 60_000); // refresh UI every 60s
+    const id = setInterval(load, 60_000);
     return () => clearInterval(id);
   }, []);
 
@@ -59,30 +101,24 @@ export default function LiveDashboard() {
   if (error) {
     return (
       <div style={{ padding: 16 }}>
-        <p><strong>Dashboard error:</strong> {error}</p>
+        <p>
+          <strong>Dashboard error:</strong> {error}
+        </p>
         <button onClick={load}>Retry</button>
       </div>
     );
   }
 
-  if (!data) {
+  if (!data || !data.today) {
     return <div style={{ padding: 16 }}>Loading live metrics…</div>;
   }
 
-  // If your API uses different keys, we can map them once you show me the JSON.
-  const drinks = data?.today?.drinks ?? 0;
-  const revenue = data?.today?.revenue ?? 0;
-  const profit = data?.today?.profit ?? 0;
+  const drinks = data.today.drinks;
+  const revenue = data.today.revenue;
+  const profit = data.today.profit;
 
-  const remainingCapital =
-    data?.breakeven?.remainingCapital ??
-    data?.breakEven?.remainingCapital ??
-    null;
-
-  const etaDays =
-    data?.breakeven?.etaDays ??
-    data?.breakEven?.etaDays ??
-    null;
+  const remainingCapital = data.breakeven?.remainingCapital;
+  const etaDays = data.breakeven?.etaDays;
 
   return (
     <div style={{ padding: 16 }}>
@@ -111,9 +147,7 @@ export default function LiveDashboard() {
           <div style={{ fontSize: 16, fontWeight: 700 }}>
             Remaining: {remainingCapital == null ? '—' : formatMoney(remainingCapital)}
           </div>
-          <div style={{ opacity: 0.8 }}>
-            ETA: {etaDays == null ? '—' : `${etaDays} days`}
-          </div>
+          <div style={{ opacity: 0.8 }}>ETA: {etaDays == null ? '—' : `${etaDays} days`}</div>
         </div>
       </div>
     </div>
